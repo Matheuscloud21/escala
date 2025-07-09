@@ -225,27 +225,27 @@ export async function POST(request: NextRequest) {
       if (linha.tipo === 'semana') {
         // Linha de semana: <td colspan="2">1ª Semana</td><td>MILITAR DE SERVIÇO</td><td>SOBREAVISO</td>
 
-        // Fundo amarelo para toda a linha
+        // Fundo amarelo para toda a linha (altura reduzida)
         page.drawRectangle({
           x: colunas.data.x,
-          y: currentY - 5,
+          y: currentY - 3,
           width: larguraTotal,
-          height: 20,
+          height: 18, // Reduzido de 20 para 18
           color: rgb(1, 1, 0), // #ffff00
           borderColor: rgb(0, 0, 0),
           borderWidth: 1,
         })
 
-        // Bordas internas verticais
+        // Bordas internas verticais (altura ajustada)
         page.drawLine({
-          start: { x: colunas.militar.x, y: currentY - 5 },
+          start: { x: colunas.militar.x, y: currentY - 3 },
           end: { x: colunas.militar.x, y: currentY + 15 },
           thickness: 1,
           color: rgb(0, 0, 0),
         })
-
+        
         page.drawLine({
-          start: { x: colunas.sobreaviso.x, y: currentY - 5 },
+          start: { x: colunas.sobreaviso.x, y: currentY - 3 },
           end: { x: colunas.sobreaviso.x, y: currentY + 15 },
           thickness: 1,
           color: rgb(0, 0, 0),
@@ -278,37 +278,37 @@ export async function POST(request: NextRequest) {
           color: rgb(0, 0, 0),
         })
 
-        currentY -= 20 // Reduzido para juntar as semanas
+        currentY -= 16 // Reduzido para compactar
       }
       else if (linha.tipo === 'linha') {
-        // Linha normal com 4 células
+        // Linha normal com 4 células (altura reduzida)
         page.drawRectangle({
           x: colunas.data.x,
-          y: currentY - 5,
+          y: currentY - 3,
           width: larguraTotal,
-          height: 20,
+          height: 16, // Reduzido de 20 para 16
           borderColor: rgb(0, 0, 0),
           borderWidth: 1,
         })
 
-        // Bordas internas verticais
+        // Bordas internas verticais (altura ajustada)
         page.drawLine({
-          start: { x: colunas.dia.x, y: currentY - 5 },
-          end: { x: colunas.dia.x, y: currentY + 15 },
+          start: { x: colunas.dia.x, y: currentY - 3 },
+          end: { x: colunas.dia.x, y: currentY + 13 },
           thickness: 1,
           color: rgb(0, 0, 0),
         })
-
+        
         page.drawLine({
-          start: { x: colunas.militar.x, y: currentY - 5 },
-          end: { x: colunas.militar.x, y: currentY + 15 },
+          start: { x: colunas.militar.x, y: currentY - 3 },
+          end: { x: colunas.militar.x, y: currentY + 13 },
           thickness: 1,
           color: rgb(0, 0, 0),
         })
-
+        
         page.drawLine({
-          start: { x: colunas.sobreaviso.x, y: currentY - 5 },
-          end: { x: colunas.sobreaviso.x, y: currentY + 15 },
+          start: { x: colunas.sobreaviso.x, y: currentY - 3 },
+          end: { x: colunas.sobreaviso.x, y: currentY + 13 },
           thickness: 1,
           color: rgb(0, 0, 0),
         })
@@ -316,54 +316,54 @@ export async function POST(request: NextRequest) {
         // Textos centralizados em cada célula
         page.drawText(linha.data || '', {
           x: colunas.data.x + colunas.data.largura / 2 - 15,
-          y: currentY,
-          size: 10,
+          y: currentY + 2, // Ajustado para ficar centralizado na célula menor
+          size: 9, // Fonte ligeiramente menor
           font,
           color: rgb(0, 0, 0),
         })
 
         page.drawText(linha.dia || '', {
           x: colunas.dia.x + colunas.dia.largura / 2 - 30,
-          y: currentY,
-          size: 10,
+          y: currentY + 2,
+          size: 9,
           font,
           color: rgb(0, 0, 0),
         })
 
         page.drawText(linha.militar || '', {
           x: colunas.militar.x + colunas.militar.largura / 2 - 25,
-          y: currentY,
-          size: 10,
+          y: currentY + 2,
+          size: 9,
           font,
           color: rgb(0, 0, 0),
         })
 
         page.drawText(linha.sobreaviso || '', {
           x: colunas.sobreaviso.x + colunas.sobreaviso.largura / 2 - 25,
-          y: currentY,
-          size: 10,
+          y: currentY + 2,
+          size: 9,
           font,
           color: rgb(0, 0, 0),
         })
 
-        currentY -= 20
+        currentY -= 16 // Reduzido de 20 para 16
       }
       else if (linha.tipo === 'fimSemana') {
-        // Linha de fim de semana: fundo #d97a00 (laranja), texto bold
+        // Linha de fim de semana: fundo #d97a00 (laranja), texto bold (altura reduzida)
         page.drawRectangle({
           x: colunas.data.x,
-          y: currentY - 5,
+          y: currentY - 3,
           width: larguraTotal,
-          height: 20,
+          height: 16, // Reduzido de 20 para 16
           color: rgb(0.85, 0.48, 0), // #d97a00
           borderColor: rgb(0, 0, 0),
           borderWidth: 1,
         })
 
-        // Bordas internas verticais
+        // Bordas internas verticais (altura ajustada)
         page.drawLine({
-          start: { x: colunas.dia.x, y: currentY - 5 },
-          end: { x: colunas.dia.x, y: currentY + 15 },
+          start: { x: colunas.dia.x, y: currentY - 3 },
+          end: { x: colunas.dia.x, y: currentY + 13 },
           thickness: 1,
           color: rgb(0, 0, 0),
         })
@@ -371,16 +371,16 @@ export async function POST(request: NextRequest) {
         // Data e Dia
         page.drawText(linha.data || '', {
           x: colunas.data.x + colunas.data.largura / 2 - 15,
-          y: currentY,
-          size: 10,
+          y: currentY + 2, // Ajustado para centralizar na célula menor
+          size: 9, // Fonte ligeiramente menor
           font: boldFont, // Bold para fins de semana
           color: rgb(1, 1, 1), // Texto branco
         })
 
         page.drawText(linha.dia || '', {
           x: colunas.dia.x + colunas.dia.largura / 2 - 30,
-          y: currentY,
-          size: 10,
+          y: currentY + 2,
+          size: 9,
           font: boldFont, // Bold para fins de semana
           color: rgb(1, 1, 1), // Texto branco
         })
@@ -388,14 +388,14 @@ export async function POST(request: NextRequest) {
         // Células 3 e 4 mescladas (colspan="2" nas últimas colunas)
         // Não precisa desenhar linha vertical entre militar e sobreaviso
 
-        currentY -= 20
+        currentY -= 16 // Reduzido de 20 para 16
       }
     })
 
     // Assinatura
     page.drawText('ARTHUR VITOR MARQUES DE SOUZA – 3º Sgt', {
       x: width / 2 - 120,
-      y: 80,
+      y: 50,
       size: 10,
       font: boldFont,
       color: rgb(0, 0, 0),
@@ -403,7 +403,7 @@ export async function POST(request: NextRequest) {
 
     page.drawText('Auxiliar de Gabinete da DOC', {
       x: width / 2 - 70,
-      y: 60,
+      y: 40,
       size: 10,
       font,
       color: rgb(0, 0, 0),
