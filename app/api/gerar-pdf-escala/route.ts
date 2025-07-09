@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     const texto1 = 'MINISTÉRIO DA DEFESA'
     page.drawText(texto1, {
       x: getCenteredX(texto1, 14, boldFont),
-      y: height - 150,
+      y: height - 130,
       size: 14,
       font: boldFont,
       color: rgb(0, 0, 0),
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     const texto2 = 'EXÉRCITO BRASILEIRO'
     page.drawText(texto2, {
       x: getCenteredX(texto2, 12, boldFont),
-      y: height - 170,
+      y: height - 142,
       size: 12,
       font: boldFont,
       color: rgb(0, 0, 0),
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     const texto3 = 'DEPARTAMENTO DE ENGENHARIA E CONSTRUÇÃO'
     page.drawText(texto3, {
       x: getCenteredX(texto3, 10, font),
-      y: height - 190,
+      y: height - 154,
       size: 10,
       font,
       color: rgb(0, 0, 0),
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     const texto4 = 'DIRETORIA DE OBRAS DE COOPERAÇÃO'
     page.drawText(texto4, {
       x: getCenteredX(texto4, 10, font),
-      y: height - 205,
+      y: height - 166,
       size: 10,
       font,
       color: rgb(0, 0, 0),
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     const texto5 = '(Serviço de Obras e Fortificações do Exército/1946)'
     page.drawText(texto5, {
       x: getCenteredX(texto5, 8, font),
-      y: height - 220,
+      y: height - 178,
       size: 8,
       font,
       color: rgb(0, 0, 0),
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
     const texto6 = '"PREVISÃO"'
     page.drawText(texto6, {
       x: getCenteredX(texto6, 12, boldFont),
-      y: height - 250,
+      y: height - 190,
       size: 12,
       font: boldFont,
       color: rgb(0, 0, 0),
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
     const texto7 = `Período ${dadosEscala.periodo || 'não definido'}.`
     page.drawText(texto7, {
       x: getCenteredX(texto7, 10, font),
-      y: height - 270,
+      y: height - 202,
       size: 10,
       font,
       color: rgb(0, 0, 0),
