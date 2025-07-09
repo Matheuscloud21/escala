@@ -5,7 +5,7 @@ import path from 'path'
 
 export async function POST(request: NextRequest) {
   let dadosEscala: any = null
-  
+
   try {
     dadosEscala = await request.json()
     console.log('📋 Dados recebidos para PDF:', dadosEscala)
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       const logoPath = path.join(process.cwd(), 'public', 'logo-pdf.png')
       const logoImageBytes = fs.readFileSync(logoPath)
       const logoImage = await pdfDoc.embedPng(logoImageBytes)
-      
+
       // Inserir brasão (80x80 como no HTML)
       page.drawImage(logoImage, {
         x: width / 2 - 40, // Centralizado
@@ -141,14 +141,14 @@ export async function POST(request: NextRequest) {
 
     // Organizar dados por semana
     const escalaItems = dadosEscala.escala || []
-    
+
     // Agora vamos usar puppeteer se estiver disponível, caso contrário manter o PDF atual
     // Por enquanto, vou manter a geração PDF atual mas ajustar para usar a nova estrutura
-    
+
     // Criar tabela com base no novo template HTML
     let currentY = height - 235 // Ajustado para dar espaço ao cabeçalho centralizado
-    
-    // Nova estrutura de tabela conforme especificações
+
+    // Nova estrutura de tabela conforme especificações - semanas juntadas com domingo
     const tabelaLinhas = [
       // 1ª Semana
       { tipo: 'semana', texto: '1ª Semana' },
@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
       { tipo: 'linha', data: '03 JUL', dia: 'Quinta-feira', militar: 'Cb UALACE', sobreaviso: 'Sd GOMES' },
       { tipo: 'linha', data: '04 JUL', dia: 'Sexta-feira', militar: 'Sd GOMES', sobreaviso: 'Cb NETO' },
       { tipo: 'fimSemana', data: '05 JUL', dia: 'Sábado' },
-      
+      { tipo: 'fimSemana', data: '06 JUL', dia: 'Domingo' },
       // 2ª Semana
       { tipo: 'semana', texto: '2ª Semana' },
       { tipo: 'linha', data: '07 JUL', dia: 'Segunda-feira', militar: 'Cb NETO', sobreaviso: 'Cb OLIVEIRA' },
@@ -166,15 +166,16 @@ export async function POST(request: NextRequest) {
       { tipo: 'linha', data: '10 JUL', dia: 'Quinta-feira', militar: 'Cb RENNAN', sobreaviso: 'Sd GOMES' },
       { tipo: 'linha', data: '11 JUL', dia: 'Sexta-feira', militar: 'Sd GOMES', sobreaviso: 'Cb NETO' },
       { tipo: 'fimSemana', data: '12 JUL', dia: 'Sábado' },
-      
+      { tipo: 'fimSemana', data: '13 JUL', dia: 'Domingo' },
       // 3ª Semana
       { tipo: 'semana', texto: '3ª Semana' },
+      { tipo: 'linha', data: '14 JUL', dia: 'Segunda-feira', militar: '', sobreaviso: '' },
       { tipo: 'linha', data: '15 JUL', dia: 'Terça-feira', militar: '', sobreaviso: '' },
       { tipo: 'linha', data: '16 JUL', dia: 'Quarta-feira', militar: '', sobreaviso: '' },
       { tipo: 'linha', data: '17 JUL', dia: 'Quinta-feira', militar: '', sobreaviso: '' },
       { tipo: 'linha', data: '18 JUL', dia: 'Sexta-feira', militar: '', sobreaviso: '' },
       { tipo: 'fimSemana', data: '19 JUL', dia: 'Sábado' },
-      
+      { tipo: 'fimSemana', data: '20 JUL', dia: 'Domingo' },
       // 4ª Semana
       { tipo: 'semana', texto: '4ª Semana' },
       { tipo: 'linha', data: '21 JUL', dia: 'Segunda-feira', militar: '', sobreaviso: '' },
@@ -183,7 +184,7 @@ export async function POST(request: NextRequest) {
       { tipo: 'linha', data: '24 JUL', dia: 'Quinta-feira', militar: '', sobreaviso: '' },
       { tipo: 'linha', data: '25 JUL', dia: 'Sexta-feira', militar: '', sobreaviso: '' },
       { tipo: 'fimSemana', data: '26 JUL', dia: 'Sábado' },
-      
+      { tipo: 'fimSemana', data: '27 JUL', dia: 'Domingo' },
       // 5ª Semana
       { tipo: 'semana', texto: '5ª Semana' },
       { tipo: 'linha', data: '28 JUL', dia: 'Segunda-feira', militar: '', sobreaviso: '' },
@@ -223,7 +224,7 @@ export async function POST(request: NextRequest) {
 
       if (linha.tipo === 'semana') {
         // Linha de semana: <td colspan="2">1ª Semana</td><td>MILITAR DE SERVIÇO</td><td>SOBREAVISO</td>
-        
+
         // Fundo amarelo para toda a linha
         page.drawRectangle({
           x: colunas.data.x,
@@ -242,7 +243,7 @@ export async function POST(request: NextRequest) {
           thickness: 1,
           color: rgb(0, 0, 0),
         })
-        
+
         page.drawLine({
           start: { x: colunas.sobreaviso.x, y: currentY - 5 },
           end: { x: colunas.sobreaviso.x, y: currentY + 15 },
@@ -277,7 +278,7 @@ export async function POST(request: NextRequest) {
           color: rgb(0, 0, 0),
         })
 
-        currentY -= 25
+        currentY -= 20 // Reduzido para juntar as semanas
       }
       else if (linha.tipo === 'linha') {
         // Linha normal com 4 células
@@ -297,14 +298,14 @@ export async function POST(request: NextRequest) {
           thickness: 1,
           color: rgb(0, 0, 0),
         })
-        
+
         page.drawLine({
           start: { x: colunas.militar.x, y: currentY - 5 },
           end: { x: colunas.militar.x, y: currentY + 15 },
           thickness: 1,
           color: rgb(0, 0, 0),
         })
-        
+
         page.drawLine({
           start: { x: colunas.sobreaviso.x, y: currentY - 5 },
           end: { x: colunas.sobreaviso.x, y: currentY + 15 },
@@ -419,15 +420,15 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `inline; filename=escala-permanencia-${new Date().toISOString().split('T')[0]}.pdf`,
       },   //"attachment" Para fazer download do pdf
-          //"inline" Para abrir em uma nova aba sem download
-    })    
+      //"inline" Para abrir em uma nova aba sem download
+    })
 
   } catch (error) {
     console.error('❌ Erro ao gerar PDF:', error)
-    
+
     return NextResponse.json(
-      { 
-        error: 'Erro ao gerar PDF', 
+      {
+        error: 'Erro ao gerar PDF',
         details: error instanceof Error ? error.message : 'Erro desconhecido',
         dados: dadosEscala
       },
