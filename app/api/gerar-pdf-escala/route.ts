@@ -18,6 +18,22 @@ export async function POST(request: NextRequest) {
 
     const { width, height } = page.getSize()
 
+    // Função para centralizar texto automaticamente
+    const getCenteredX = (text: string, fontSize: number, font: any) => {
+      const textWidth = font.widthOfTextAtSize(text, fontSize)
+      return (width - textWidth) / 2
+    }
+
+    // Adicionar borda ao redor de todo o documento (conforme novo template)
+    page.drawRectangle({
+      x: 20,
+      y: 20,
+      width: width - 40,
+      height: height - 40,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 1,
+    })
+
     // Telefone do Subdiretor (canto superior direito)
     page.drawText('Telefone do Subdiretor:', {
       x: 420,
@@ -34,66 +50,103 @@ export async function POST(request: NextRequest) {
       color: rgb(0, 0, 0),
     })
 
-    // Cabeçalho centralizado
-    page.drawText('MINISTÉRIO DA DEFESA', {
-      x: width / 2 - 90,
-      y: height - 80,
+    // Carregar e inserir o brasão
+    try {
+      const logoPath = path.join(process.cwd(), 'public', 'logo-pdf.png')
+      const logoImageBytes = fs.readFileSync(logoPath)
+      const logoImage = await pdfDoc.embedPng(logoImageBytes)
+      
+      // Inserir brasão (80x80 como no HTML)
+      page.drawImage(logoImage, {
+        x: width / 2 - 40, // Centralizado
+        y: height - 120,
+        width: 80,
+        height: 80,
+      })
+    } catch (error) {
+      console.warn('⚠️ Não foi possível carregar o brasão:', error)
+    }
+
+    // Cabeçalho centralizado automaticamente (ajustado para ficar abaixo do brasão)
+    const texto1 = 'MINISTÉRIO DA DEFESA'
+    page.drawText(texto1, {
+      x: getCenteredX(texto1, 14, boldFont),
+      y: height - 150,
       size: 14,
       font: boldFont,
       color: rgb(0, 0, 0),
     })
 
-    page.drawText('EXÉRCITO BRASILEIRO', {
-      x: width / 2 - 80,
-      y: height - 100,
+    const texto2 = 'EXÉRCITO BRASILEIRO'
+    page.drawText(texto2, {
+      x: getCenteredX(texto2, 12, boldFont),
+      y: height - 170,
       size: 12,
       font: boldFont,
       color: rgb(0, 0, 0),
     })
 
-    page.drawText('DEPARTAMENTO DE ENGENHARIA E CONSTRUÇÃO', {
-      x: width / 2 - 140,
-      y: height - 120,
+    const texto3 = 'DEPARTAMENTO DE ENGENHARIA E CONSTRUÇÃO'
+    page.drawText(texto3, {
+      x: getCenteredX(texto3, 10, font),
+      y: height - 190,
       size: 10,
       font,
       color: rgb(0, 0, 0),
     })
 
-    page.drawText('DIRETORIA DE OBRAS DE COOPERAÇÃO', {
-      x: width / 2 - 120,
-      y: height - 135,
+    const texto4 = 'DIRETORIA DE OBRAS DE COOPERAÇÃO'
+    page.drawText(texto4, {
+      x: getCenteredX(texto4, 10, font),
+      y: height - 205,
       size: 10,
       font,
       color: rgb(0, 0, 0),
     })
 
-    page.drawText('(Serviço de Obras e Fortificações do Exército/1946)', {
-      x: width / 2 - 130,
-      y: height - 150,
+    const texto5 = '(Serviço de Obras e Fortificações do Exército/1946)'
+    page.drawText(texto5, {
+      x: getCenteredX(texto5, 8, font),
+      y: height - 220,
       size: 8,
       font,
       color: rgb(0, 0, 0),
     })
 
     // Título da escala
-    page.drawText('"PREVISÃO"', {
-      x: width / 2 - 35,
-      y: height - 180,
+    const texto6 = '"PREVISÃO"'
+    page.drawText(texto6, {
+      x: getCenteredX(texto6, 12, boldFont),
+      y: height - 250,
       size: 12,
       font: boldFont,
       color: rgb(0, 0, 0),
     })
 
-    page.drawText(`Período ${dadosEscala.periodo || 'não definido'}.`, {
-      x: width / 2 - 80,
-      y: height - 200,
+    const texto7 = `Período ${dadosEscala.periodo || 'não definido'}.`
+    page.drawText(texto7, {
+      x: getCenteredX(texto7, 10, font),
+      y: height - 270,
       size: 10,
       font,
       color: rgb(0, 0, 0),
     })
 
-    // Criar tabela EXATAMENTE como no HTML fornecido
-    let currentY = height - 240
+    // Ler o novo template HTML
+    const templatePath = path.join(process.cwd(), 'templates', 'escala-nova.html')
+    let htmlTemplate = fs.readFileSync(templatePath, 'utf8')
+
+    // Substituir o período no template
+    htmlTemplate = htmlTemplate.replace('__PERIODO__', dadosEscala.periodo || 'não definido')
+
+    // Organizar dados por semana
+    const escalaItems = dadosEscala.escala || []
+    
+    // Agora vamos usar puppeteer se estiver disponível, caso contrário manter o PDF atual
+    // Por enquanto, vou manter a geração PDF atual mas ajustar para usar a nova estrutura
+    
+    // Criar tabela com base no novo template HTML
+    let currentY = height - 300 // Ajustado para dar espaço ao cabeçalho centralizado
     
     // Primeira tabela com todas as linhas como no HTML original
     const tabelaLinhas = [
@@ -141,7 +194,6 @@ export async function POST(request: NextRequest) {
     ]
 
     // Agora substituir os dados vazios com os dados reais da escala
-    const escalaItems = dadosEscala.escala || []
     let dataIndex = 0
 
     tabelaLinhas.forEach((linha, index) => {
@@ -164,13 +216,13 @@ export async function POST(request: NextRequest) {
       if (currentY < 80) return // Evitar sair da página
 
       if (linha.tipo === 'semana') {
-        // Linha da semana (fundo amarelo)
+        // Linha da semana (fundo amarelo com texto vermelho - conforme novo template)
         page.drawRectangle({
           x: 50,
           y: currentY - 5,
           width: 495,
           height: 20,
-          color: rgb(0.96, 0.96, 0.33), // Amarelo
+          color: rgb(1, 1, 0), // Amarelo puro (#ffff00)
           borderColor: rgb(0, 0, 0),
           borderWidth: 1,
         })
@@ -178,21 +230,21 @@ export async function POST(request: NextRequest) {
         page.drawText(linha.texto || '', {
           x: width / 2 - 30,
           y: currentY,
-          size: 12,
+          size: 14,
           font: boldFont,
-          color: rgb(0, 0, 0),
+          color: rgb(1, 0, 0), // Texto vermelho (#ff0000)
         })
 
         currentY -= 25
       }
       else if (linha.tipo === 'cabecalho') {
-        // Cabeçalhos da tabela (fundo amarelo)
+        // Cabeçalhos da tabela (fundo amarelo com texto preto - conforme novo template)
         page.drawRectangle({
           x: 50,
           y: currentY - 5,
           width: 495,
           height: 20,
-          color: rgb(0.96, 0.96, 0.33), // Amarelo
+          color: rgb(1, 1, 0), // Amarelo puro (#ffff00)
           borderColor: rgb(0, 0, 0),
           borderWidth: 1,
         })
@@ -202,7 +254,7 @@ export async function POST(request: NextRequest) {
           y: currentY,
           size: 10,
           font: boldFont,
-          color: rgb(0, 0, 0),
+          color: rgb(0, 0, 0), // Texto preto
         })
 
         page.drawText('Dia', {
@@ -210,7 +262,7 @@ export async function POST(request: NextRequest) {
           y: currentY,
           size: 10,
           font: boldFont,
-          color: rgb(0, 0, 0),
+          color: rgb(0, 0, 0), // Texto preto
         })
 
         page.drawText('MILITAR DE SERVIÇO', {
@@ -218,7 +270,7 @@ export async function POST(request: NextRequest) {
           y: currentY,
           size: 10,
           font: boldFont,
-          color: rgb(0, 0, 0),
+          color: rgb(0, 0, 0), // Texto preto
         })
 
         page.drawText('SOBREAVISO', {
@@ -226,7 +278,7 @@ export async function POST(request: NextRequest) {
           y: currentY,
           size: 10,
           font: boldFont,
-          color: rgb(0, 0, 0),
+          color: rgb(0, 0, 0), // Texto preto
         })
 
         currentY -= 25
@@ -343,9 +395,10 @@ export async function POST(request: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename=escala-permanencia-${new Date().toISOString().split('T')[0]}.pdf`,
-      },
-    })
+        'Content-Disposition': `inline; filename=escala-permanencia-${new Date().toISOString().split('T')[0]}.pdf`,
+      },   //"attachment" Para fazer download do pdf
+          //"inline" Para abrir em uma nova aba sem download
+    })    
 
   } catch (error) {
     console.error('❌ Erro ao gerar PDF:', error)

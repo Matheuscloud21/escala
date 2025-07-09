@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Escala de Permanência - Julho 2025</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Times New Roman', serif;
+      background-color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      border: 1px solid black;
+      padding: 20px;
+      width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      position: relative;
+    }
+
+    .telefone {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .telefone strong {
+      font-weight: bold;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .brasao {
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 16px;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+
+    .header h2 {
+      font-size: 14px;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+
+    .header p {
+      font-size: 12px;
+      margin: 3px 0;
+    }
+
+    .header .previsao {
+      font-size: 14px;
+      font-weight: bold;
+      margin: 15px 0 5px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 12px;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .semana {
+      background-color: #ffff00;
+      color: #ff0000;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .cabecalho {
+      background-color: #ffff00;
+      color: #000000;
+      font-weight: bold;
+    }
+
+    .domingo, .sabado {
+      background-color: #dc6c10;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .linha-normal {
+      background-color: white;
+    }
+
+    .linha-normal:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .assinatura {
+      text-align: center;
+      margin-top: 30px;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .assinatura .nome {
+      color: #000;
+      margin-bottom: 5px;
+    }
+
+    .assinatura .cargo {
+      color: #000;
+    }
+
+    /* Estilo para impressão A4 */
+    @media print {
+      body {
+        padding: 0;
+      }
+      
+      .container {
+        width: 100%;
+        max-width: 210mm;
+        margin: 0;
+        border: 1px solid black;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Telefone do Subdiretor -->
+    <div class="telefone">
+      Telefone do Subdiretor:<br>
+      <strong>61 996881722</strong>
+    </div>
+
+    <!-- Cabeçalho -->
+    <div class="header">
+      <div class="brasao">
+        <img src="../public/logo-pdf.png" width="80" alt="Brasão da República">
+      </div>
+      
+      <h1>MINISTÉRIO DA DEFESA</h1>
+      <h2>EXÉRCITO BRASILEIRO</h2>
+      <p>DEPARTAMENTO DE ENGENHARIA E CONSTRUÇÃO</p>
+      <p>DIRETORIA DE OBRAS DE COOPERAÇÃO</p>
+      <p><em>(Serviço de Obras e Fortificações do Exército/1946)</em></p>
+      
+      <div class="previsao">"PREVISÃO"</div>
+      <p>Período __PERIODO__.</p>
+    </div>
+
+    <!-- Tabela da Escala -->
+    <table>
+      <!-- 1ª Semana -->
+      <tr class="semana">
+        <td colspan="4">1ª Semana</td>
+      </tr>
+      <tr class="cabecalho">
+        <th>Data</th>
+        <th>Dia</th>
+        <th>MILITAR DE SERVIÇO</th>
+        <th>SOBREAVISO</th>
+      </tr>
+      <tr class="linha-normal">
+        <td>01.JUL</td>
+        <td>Terça-feira</td>
+        <td>Cb RENNAN</td>
+        <td>Cb OLIVEIRA</td>
+      </tr>
+      <tr class="linha-normal">
+        <td>02.JUL</td>
+        <td>Quarta-feira</td>
+        <td>Cb OLIVEIRA</td>
+        <td>Cb NETO</td>
+      </tr>
+      <tr class="linha-normal">
+        <td>03.JUL</td>
+        <td>Quinta-feira</td>
+        <td>Cb UALACE</td>
+        <td>Sd GOMES</td>
+      </tr>
+      <tr class="linha-normal">
+        <td>04.JUL</td>
+        <td>Sexta-feira</td>
+        <td>Sd GOMES</td>
+        <td>Cb NETO</td>
+      </tr>
+      <tr class="sabado">
+        <td>05.JUL</td>
+        <td>Sábado</td>
+        <td colspan="2"></td>
+      </tr>
+
+      <!-- 2ª Semana -->
+      <tr class="semana">
+        <td colspan="4">2ª Semana</td>
+      </tr>
+      <tr class="linha-normal">
+        <td>07.JUL</td>
+        <td>Segunda-feira</td>
+        <td>Cb NETO</td>
+        <td>Cb OLIVEIRA</td>
+      </tr>
+      <tr class="linha-normal">
+        <td>08.JUL</td>
+        <td>Terça-feira</td>
+        <td>Cb OLIVEIRA</td>
+        <td>Cb UALACE</td>
+      </tr>
+      <tr class="linha-normal">
+        <td>09.JUL</td>
+        <td>Quarta-feira</td>
+        <td>Cb UALACE</td>
+        <td>Cb RENNAN</td>
+      </tr>
+      <tr class="linha-normal">
+        <td>10.JUL</td>
+        <td>Quinta-feira</td>
+        <td>Cb RENNAN</td>
+        <td>Sd GOMES</td>
+      </tr>
+      <tr class="linha-normal">
+        <td>11.JUL</td>
+        <td>Sexta-feira</td>
+        <td>Sd GOMES</td>
+        <td>Cb NETO</td>
+      </tr>
+      <tr class="sabado">
+        <td>12.JUL</td>
+        <td>Sábado</td>
+        <td colspan="2"></td>
+      </tr>
+
+      <!-- 3ª Semana -->
+      <tr class="semana">
+        <td colspan="4">3ª Semana</td>
+      </tr>
+      <tr class="linha-normal">
+        <td>15.JUL</td>
+        <td>Terça-feira</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr class="linha-normal">
+        <td>16.JUL</td>
+        <td>Quarta-feira</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr class="linha-normal">
+        <td>17.JUL</td>
+        <td>Quinta-feira</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr class="linha-normal">
+        <td>18.JUL</td>
+        <td>Sexta-feira</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr class="sabado">
+        <td>19.JUL</td>
+        <td>Sábado</td>
+        <td colspan="2"></td>
+      </tr>
+
+      <!-- 4ª Semana -->
+      <tr class="semana">
+        <td colspan="4">4ª Semana</td>
+      </tr>
+      <tr class="linha-normal">
+        <td>21.JUL</td>
+        <td>Segunda-feira</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr class="linha-normal">
+        <td>22.JUL</td>
+        <td>Terça-feira</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr class="linha-normal">
+        <td>23.JUL</td>
+        <td>Quarta-feira</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr class="linha-normal">
+        <td>24.JUL</td>
+        <td>Quinta-feira</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr class="linha-normal">
+        <td>25.JUL</td>
+        <td>Sexta-feira</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr class="sabado">
+        <td>26.JUL</td>
+        <td>Sábado</td>
+        <td colspan="2"></td>
+      </tr>
+
+      <!-- 5ª Semana -->
+      <tr class="semana">
+        <td colspan="4">5ª Semana</td>
+      </tr>
+      <tr class="linha-normal">
+        <td>28.JUL</td>
+        <td>Segunda-feira</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr class="linha-normal">
+        <td>29.JUL</td>
+        <td>Terça-feira</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr class="linha-normal">
+        <td>30.JUL</td>
+        <td>Quarta-feira</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr class="linha-normal">
+        <td>31.JUL</td>
+        <td>Quinta-feira</td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+
+    <!-- Assinatura -->
+    <div class="assinatura">
+      <div class="nome">ARTHUR VITOR MARQUES DE SOUZA – 3º Sgt</div>
+      <div class="cargo">Auxiliar de Gabinete da DOC</div>
+    </div>
+
+  </div>
+
+</body>
+</html>
