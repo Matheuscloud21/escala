@@ -146,61 +146,58 @@ export async function POST(request: NextRequest) {
     // Por enquanto, vou manter a geração PDF atual mas ajustar para usar a nova estrutura
     
     // Criar tabela com base no novo template HTML
-    let currentY = height - 300 // Ajustado para dar espaço ao cabeçalho centralizado
+    let currentY = height - 235 // Ajustado para dar espaço ao cabeçalho centralizado
     
-    // Primeira tabela com todas as linhas como no HTML original
+    // Nova estrutura de tabela conforme especificações
     const tabelaLinhas = [
       // 1ª Semana
-      { tipo: 'semana', texto: '1ª Semana', colspan: 4 },
-      { tipo: 'cabecalho', colunas: ['Data', 'Dia', 'MILITAR DE SERVIÇO', 'SOBREAVISO'] },
-      { tipo: 'linha', data: '01.JUL', dia: 'Terça-feira', militar: 'Cb RENNAN', sobreaviso: 'Cb OLIVEIRA' },
-      { tipo: 'linha', data: '02.JUL', dia: 'Quarta-feira', militar: 'Cb OLIVEIRA', sobreaviso: 'Cb NETO' },
-      { tipo: 'linha', data: '03.JUL', dia: 'Quinta-feira', militar: 'Cb UALACE', sobreaviso: 'Sd GOMES' },
-      { tipo: 'linha', data: '04.JUL', dia: 'Sexta-feira', militar: 'Sd GOMES', sobreaviso: 'Cb NETO' },
-      { tipo: 'fimSemana', data: '05.JUL', dia: 'Sábado', classe: 'sabado' },
+      { tipo: 'semana', texto: '1ª Semana' },
+      { tipo: 'linha', data: '01 JUL', dia: 'Terça-feira', militar: '{{dado}}', sobreaviso: 'Cb OLIVEIRA' },
+      { tipo: 'linha', data: '02 JUL', dia: 'Quarta-feira', militar: 'Cb OLIVEIRA', sobreaviso: 'Cb NETO' },
+      { tipo: 'linha', data: '03 JUL', dia: 'Quinta-feira', militar: 'Cb UALACE', sobreaviso: 'Sd GOMES' },
+      { tipo: 'linha', data: '04 JUL', dia: 'Sexta-feira', militar: 'Sd GOMES', sobreaviso: 'Cb NETO' },
+      { tipo: 'fimSemana', data: '05 JUL', dia: 'Sábado' },
       
       // 2ª Semana
-      { tipo: 'semana', texto: '2ª Semana', colspan: 4 },
-      { tipo: 'linha', data: '07.JUL', dia: 'Segunda-feira', militar: 'Cb NETO', sobreaviso: 'Cb OLIVEIRA' },
-      { tipo: 'linha', data: '08.JUL', dia: 'Terça-feira', militar: 'Cb OLIVEIRA', sobreaviso: 'Cb UALACE' },
-      { tipo: 'linha', data: '09.JUL', dia: 'Quarta-feira', militar: 'Cb UALACE', sobreaviso: 'Cb RENNAN' },
-      { tipo: 'linha', data: '10.JUL', dia: 'Quinta-feira', militar: 'Cb RENNAN', sobreaviso: 'Sd GOMES' },
-      { tipo: 'linha', data: '11.JUL', dia: 'Sexta-feira', militar: 'Sd GOMES', sobreaviso: 'Cb NETO' },
-      { tipo: 'fimSemana', data: '12.JUL', dia: 'Sábado', classe: 'sabado' },
+      { tipo: 'semana', texto: '2ª Semana' },
+      { tipo: 'linha', data: '07 JUL', dia: 'Segunda-feira', militar: 'Cb NETO', sobreaviso: 'Cb OLIVEIRA' },
+      { tipo: 'linha', data: '08 JUL', dia: 'Terça-feira', militar: 'Cb OLIVEIRA', sobreaviso: 'Cb UALACE' },
+      { tipo: 'linha', data: '09 JUL', dia: 'Quarta-feira', militar: 'Cb UALACE', sobreaviso: 'Cb RENNAN' },
+      { tipo: 'linha', data: '10 JUL', dia: 'Quinta-feira', militar: 'Cb RENNAN', sobreaviso: 'Sd GOMES' },
+      { tipo: 'linha', data: '11 JUL', dia: 'Sexta-feira', militar: 'Sd GOMES', sobreaviso: 'Cb NETO' },
+      { tipo: 'fimSemana', data: '12 JUL', dia: 'Sábado' },
       
       // 3ª Semana
-      { tipo: 'semana', texto: '3ª Semana', colspan: 4 },
-      { tipo: 'linha', data: '15.JUL', dia: 'Terça-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '16.JUL', dia: 'Quarta-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '17.JUL', dia: 'Quinta-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '18.JUL', dia: 'Sexta-feira', militar: '', sobreaviso: '' },
-      { tipo: 'fimSemana', data: '19.JUL', dia: 'Sábado', classe: 'sabado' },
+      { tipo: 'semana', texto: '3ª Semana' },
+      { tipo: 'linha', data: '15 JUL', dia: 'Terça-feira', militar: '', sobreaviso: '' },
+      { tipo: 'linha', data: '16 JUL', dia: 'Quarta-feira', militar: '', sobreaviso: '' },
+      { tipo: 'linha', data: '17 JUL', dia: 'Quinta-feira', militar: '', sobreaviso: '' },
+      { tipo: 'linha', data: '18 JUL', dia: 'Sexta-feira', militar: '', sobreaviso: '' },
+      { tipo: 'fimSemana', data: '19 JUL', dia: 'Sábado' },
       
       // 4ª Semana
-      { tipo: 'semana', texto: '4ª Semana', colspan: 4 },
-      { tipo: 'linha', data: '21.JUL', dia: 'Segunda-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '22.JUL', dia: 'Terça-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '23.JUL', dia: 'Quarta-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '24.JUL', dia: 'Quinta-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '25.JUL', dia: 'Sexta-feira', militar: '', sobreaviso: '' },
-      { tipo: 'fimSemana', data: '26.JUL', dia: 'Sábado', classe: 'sabado' },
+      { tipo: 'semana', texto: '4ª Semana' },
+      { tipo: 'linha', data: '21 JUL', dia: 'Segunda-feira', militar: '', sobreaviso: '' },
+      { tipo: 'linha', data: '22 JUL', dia: 'Terça-feira', militar: '', sobreaviso: '' },
+      { tipo: 'linha', data: '23 JUL', dia: 'Quarta-feira', militar: '', sobreaviso: '' },
+      { tipo: 'linha', data: '24 JUL', dia: 'Quinta-feira', militar: '', sobreaviso: '' },
+      { tipo: 'linha', data: '25 JUL', dia: 'Sexta-feira', militar: '', sobreaviso: '' },
+      { tipo: 'fimSemana', data: '26 JUL', dia: 'Sábado' },
       
       // 5ª Semana
-      { tipo: 'semana', texto: '5ª Semana', colspan: 4 },
-      { tipo: 'linha', data: '28.JUL', dia: 'Segunda-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '29.JUL', dia: 'Terça-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '30.JUL', dia: 'Quarta-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '31.JUL', dia: 'Quinta-feira', militar: '', sobreaviso: '' },
+      { tipo: 'semana', texto: '5ª Semana' },
+      { tipo: 'linha', data: '28 JUL', dia: 'Segunda-feira', militar: '', sobreaviso: '' },
+      { tipo: 'linha', data: '29 JUL', dia: 'Terça-feira', militar: '', sobreaviso: '' },
+      { tipo: 'linha', data: '30 JUL', dia: 'Quarta-feira', militar: '', sobreaviso: '' },
+      { tipo: 'linha', data: '31 JUL', dia: 'Quinta-feira', militar: '', sobreaviso: '' },
     ]
 
-    // Agora substituir os dados vazios com os dados reais da escala
+    // Substituir dados vazios com dados reais da escala
     let dataIndex = 0
-
     tabelaLinhas.forEach((linha, index) => {
-      if (linha.tipo === 'linha' && dataIndex < escalaItems.length) {
+      if ((linha.tipo === 'linha' || linha.tipo === 'fimSemana') && dataIndex < escalaItems.length) {
         const dadoReal = escalaItems[dataIndex]
         if (dadoReal) {
-          // Substituir com dados reais
           tabelaLinhas[index] = {
             ...linha,
             militar: dadoReal.militar?.nome || '',
@@ -211,117 +208,139 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Renderizar a tabela
+    // Definir larguras proporcionais: 15% (Data), 25% (Dia), 30% + 30% (Serviço/Sobreaviso)
+    const larguraTotal = 495
+    const colunas = {
+      data: { x: 50, largura: larguraTotal * 0.15 }, // 15%
+      dia: { x: 50 + larguraTotal * 0.15, largura: larguraTotal * 0.25 }, // 25%
+      militar: { x: 50 + larguraTotal * 0.4, largura: larguraTotal * 0.3 }, // 30%
+      sobreaviso: { x: 50 + larguraTotal * 0.7, largura: larguraTotal * 0.3 } // 30%
+    }
+
+    // Renderizar a tabela conforme especificações
     tabelaLinhas.forEach((linha) => {
       if (currentY < 80) return // Evitar sair da página
 
       if (linha.tipo === 'semana') {
-        // Linha da semana (fundo amarelo com texto vermelho - conforme novo template)
+        // Linha de semana: <td colspan="2">1ª Semana</td><td>MILITAR DE SERVIÇO</td><td>SOBREAVISO</td>
+        
+        // Fundo amarelo para toda a linha
         page.drawRectangle({
-          x: 50,
+          x: colunas.data.x,
           y: currentY - 5,
-          width: 495,
+          width: larguraTotal,
           height: 20,
-          color: rgb(1, 1, 0), // Amarelo puro (#ffff00)
+          color: rgb(1, 1, 0), // #ffff00
           borderColor: rgb(0, 0, 0),
           borderWidth: 1,
         })
 
+        // Bordas internas verticais
+        page.drawLine({
+          start: { x: colunas.militar.x, y: currentY - 5 },
+          end: { x: colunas.militar.x, y: currentY + 15 },
+          thickness: 1,
+          color: rgb(0, 0, 0),
+        })
+        
+        page.drawLine({
+          start: { x: colunas.sobreaviso.x, y: currentY - 5 },
+          end: { x: colunas.sobreaviso.x, y: currentY + 15 },
+          thickness: 1,
+          color: rgb(0, 0, 0),
+        })
+
+        // Texto "1ª Semana" (colspan="2" - nas primeiras duas colunas)
         page.drawText(linha.texto || '', {
-          x: width / 2 - 30,
+          x: colunas.data.x + (colunas.data.largura + colunas.dia.largura) / 2 - 30,
           y: currentY,
-          size: 14,
+          size: 11,
           font: boldFont,
-          color: rgb(1, 0, 0), // Texto vermelho (#ff0000)
+          color: rgb(0, 0, 0),
         })
 
-        currentY -= 25
-      }
-      else if (linha.tipo === 'cabecalho') {
-        // Cabeçalhos da tabela (fundo amarelo com texto preto - conforme novo template)
-        page.drawRectangle({
-          x: 50,
-          y: currentY - 5,
-          width: 495,
-          height: 20,
-          color: rgb(1, 1, 0), // Amarelo puro (#ffff00)
-          borderColor: rgb(0, 0, 0),
-          borderWidth: 1,
-        })
-
-        page.drawText('Data', {
-          x: 80,
-          y: currentY,
-          size: 10,
-          font: boldFont,
-          color: rgb(0, 0, 0), // Texto preto
-        })
-
-        page.drawText('Dia', {
-          x: 160,
-          y: currentY,
-          size: 10,
-          font: boldFont,
-          color: rgb(0, 0, 0), // Texto preto
-        })
-
+        // "MILITAR DE SERVIÇO"
         page.drawText('MILITAR DE SERVIÇO', {
-          x: 250,
+          x: colunas.militar.x + 20,
           y: currentY,
-          size: 10,
+          size: 11,
           font: boldFont,
-          color: rgb(0, 0, 0), // Texto preto
+          color: rgb(0, 0, 0),
         })
 
+        // "SOBREAVISO"
         page.drawText('SOBREAVISO', {
-          x: 430,
+          x: colunas.sobreaviso.x + 30,
           y: currentY,
-          size: 10,
+          size: 11,
           font: boldFont,
-          color: rgb(0, 0, 0), // Texto preto
+          color: rgb(0, 0, 0),
         })
 
         currentY -= 25
       }
       else if (linha.tipo === 'linha') {
-        // Linha normal
+        // Linha normal com 4 células
         page.drawRectangle({
-          x: 50,
+          x: colunas.data.x,
           y: currentY - 5,
-          width: 495,
+          width: larguraTotal,
           height: 20,
           borderColor: rgb(0, 0, 0),
           borderWidth: 1,
         })
 
+        // Bordas internas verticais
+        page.drawLine({
+          start: { x: colunas.dia.x, y: currentY - 5 },
+          end: { x: colunas.dia.x, y: currentY + 15 },
+          thickness: 1,
+          color: rgb(0, 0, 0),
+        })
+        
+        page.drawLine({
+          start: { x: colunas.militar.x, y: currentY - 5 },
+          end: { x: colunas.militar.x, y: currentY + 15 },
+          thickness: 1,
+          color: rgb(0, 0, 0),
+        })
+        
+        page.drawLine({
+          start: { x: colunas.sobreaviso.x, y: currentY - 5 },
+          end: { x: colunas.sobreaviso.x, y: currentY + 15 },
+          thickness: 1,
+          color: rgb(0, 0, 0),
+        })
+
+        // Textos centralizados em cada célula
         page.drawText(linha.data || '', {
-          x: 70,
+          x: colunas.data.x + colunas.data.largura / 2 - 15,
           y: currentY,
-          size: 9,
+          size: 10,
           font,
           color: rgb(0, 0, 0),
         })
 
         page.drawText(linha.dia || '', {
-          x: 140,
+          x: colunas.dia.x + colunas.dia.largura / 2 - 30,
           y: currentY,
-          size: 9,
+          size: 10,
           font,
           color: rgb(0, 0, 0),
         })
 
         page.drawText(linha.militar || '', {
-          x: 250,
+          x: colunas.militar.x + colunas.militar.largura / 2 - 25,
           y: currentY,
-          size: 9,
+          size: 10,
           font,
           color: rgb(0, 0, 0),
         })
 
         page.drawText(linha.sobreaviso || '', {
-          x: 430,
+          x: colunas.sobreaviso.x + colunas.sobreaviso.largura / 2 - 25,
           y: currentY,
-          size: 9,
+          size: 10,
           font,
           color: rgb(0, 0, 0),
         })
@@ -329,41 +348,44 @@ export async function POST(request: NextRequest) {
         currentY -= 20
       }
       else if (linha.tipo === 'fimSemana') {
-        // Linha de fim de semana (fundo laranja)
+        // Linha de fim de semana: fundo #d97a00 (laranja), texto bold
         page.drawRectangle({
-          x: 50,
+          x: colunas.data.x,
           y: currentY - 5,
-          width: 495,
+          width: larguraTotal,
           height: 20,
-          color: rgb(0.86, 0.42, 0.06), // Laranja
+          color: rgb(0.85, 0.48, 0), // #d97a00
           borderColor: rgb(0, 0, 0),
           borderWidth: 1,
         })
 
+        // Bordas internas verticais
+        page.drawLine({
+          start: { x: colunas.dia.x, y: currentY - 5 },
+          end: { x: colunas.dia.x, y: currentY + 15 },
+          thickness: 1,
+          color: rgb(0, 0, 0),
+        })
+
+        // Data e Dia
         page.drawText(linha.data || '', {
-          x: 70,
+          x: colunas.data.x + colunas.data.largura / 2 - 15,
           y: currentY,
-          size: 9,
-          font,
+          size: 10,
+          font: boldFont, // Bold para fins de semana
           color: rgb(1, 1, 1), // Texto branco
         })
 
         page.drawText(linha.dia || '', {
-          x: 140,
+          x: colunas.dia.x + colunas.dia.largura / 2 - 30,
           y: currentY,
-          size: 9,
-          font,
+          size: 10,
+          font: boldFont, // Bold para fins de semana
           color: rgb(1, 1, 1), // Texto branco
         })
 
-        // Campo mesclado (colspan="2")
-        page.drawText('', {
-          x: 250,
-          y: currentY,
-          size: 9,
-          font,
-          color: rgb(1, 1, 1),
-        })
+        // Células 3 e 4 mescladas (colspan="2" nas últimas colunas)
+        // Não precisa desenhar linha vertical entre militar e sobreaviso
 
         currentY -= 20
       }
