@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
     // Criar tabela com base no novo template HTML
     let currentY = height - 235 // Ajustado para dar espaço ao cabeçalho centralizado
 
-    // Geração dinâmica da tabela conforme mês/ano recebido
+    // Geração dinâmica da tabela conforme mês/ano recebido, começando do dia 1 e terminando no último dia
     const mesesNomes = [
       "JAN", "FEV", "MAR", "ABR", "MAI", "JUN",
       "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"
@@ -164,30 +164,37 @@ export async function POST(request: NextRequest) {
     let tabelaLinhas = []
     let semana = 1
     let dataIndex = 0
+    let dia = 1
 
-    for (let dia = 1; dia <= ultimoDia; ) {
-      // Descobre o dia da semana do primeiro dia da semana (segunda-feira)
-      const dataObj = new Date(ano, mes, dia)
-      let diaSemana = dataObj.getDay() // 0 = domingo, 1 = segunda, ..., 6 = sábado
-
-      // Ajusta para começar na segunda-feira
-      let inicioSemana = dia
-      if (diaSemana !== 1) {
-        // Se não for segunda, pula para a próxima segunda
-        inicioSemana += (diaSemana === 0 ? 1 : (8 - diaSemana))
-        if (inicioSemana > ultimoDia) break
-      }
-
-      // Adiciona linha de semana
+    while (dia <= ultimoDia) {
       tabelaLinhas.push({ tipo: 'semana', texto: `${semana}ª Semana` })
 
-      // Para cada dia da semana (segunda a sexta)
-      for (let i = 0; i < 5; i++) {
-        const diaCorrente = inicioSemana + i
-        if (diaCorrente > ultimoDia) break
-        const dataCorrente = new Date(ano, mes, diaCorrente)
+      // Primeira semana: começa no dia 1, no dia da semana correspondente, vai até sexta ou fim do mês
+      // Demais semanas: sempre de segunda a sexta, ou até fim do mês
+      let dataObj = new Date(ano, mes, dia)
+      let diaSemana = dataObj.getDay() // 0=domingo, 1=segunda, ..., 6=sábado
+
+      // Descobre quantos dias úteis (segunda a sexta) restam na semana
+      let diasNaSemana = 0
+      if (semana === 1) {
+        // Primeira semana: começa no dia 1, vai até sexta ou fim do mês
+        diasNaSemana = Math.min(5 - ((diaSemana === 0 ? 6 : diaSemana - 1)), ultimoDia - dia + 1)
+      } else {
+        // Demais semanas: tenta preencher de segunda a sexta
+        // Ajusta para próxima segunda-feira se não for segunda
+        if (diaSemana !== 1) {
+          dia += (diaSemana === 0 ? 1 : (8 - diaSemana))
+          if (dia > ultimoDia) break
+          dataObj = new Date(ano, mes, dia)
+          diaSemana = dataObj.getDay()
+        }
+        diasNaSemana = Math.min(5, ultimoDia - dia + 1)
+      }
+
+      for (let i = 0; i < diasNaSemana; i++) {
+        const dataCorrente = new Date(ano, mes, dia)
         const nomeDia = diasSemanaNomes[dataCorrente.getDay() === 0 ? 6 : dataCorrente.getDay() - 1]
-        const dataFormatada = `${diaCorrente.toString().padStart(2, "0")} ${mesesNomes[mes]}`
+        const dataFormatada = `${dia.toString().padStart(2, "0")} ${mesesNomes[mes]}`
         const escala = escalaItems[dataIndex] || {}
         tabelaLinhas.push({
           tipo: 'linha',
@@ -197,34 +204,10 @@ export async function POST(request: NextRequest) {
           sobreaviso: escala.sobreaviso?.nome || ''
         })
         dataIndex++
-      }
-
-      // Sábado
-      const sabado = inicioSemana + 5
-      if (sabado <= ultimoDia) {
-        const dataSab = new Date(ano, mes, sabado)
-        tabelaLinhas.push({
-          tipo: 'fimSemana',
-          data: `${sabado.toString().padStart(2, "0")} ${mesesNomes[mes]}`,
-          dia: 'Sábado'
-        })
-        dataIndex++
-      }
-
-      // Domingo
-      const domingo = inicioSemana + 6
-      if (domingo <= ultimoDia) {
-        const dataDom = new Date(ano, mes, domingo)
-        tabelaLinhas.push({
-          tipo: 'fimSemana',
-          data: `${domingo.toString().padStart(2, "0")} ${mesesNomes[mes]}`,
-          dia: 'Domingo'
-        })
-        dataIndex++
+        dia++
       }
 
       semana++
-      dia = inicioSemana + 7
     }
 
     // (Removido: substituição de dados vazios, pois já é feito na geração dinâmica)
