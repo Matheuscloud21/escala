@@ -164,47 +164,69 @@ export async function POST(request: NextRequest) {
     let tabelaLinhas = []
     let semana = 1
     let dataIndex = 0
-    let dia = 1
+    let currentDay = 1
 
-    while (dia <= ultimoDia) {
-      tabelaLinhas.push({ tipo: 'semana', texto: `${semana}ª Semana` })
+    // Nova lógica: cada semana sempre começa na segunda-feira e tem 7 posições (segunda a domingo)
+    while (currentDay <= ultimoDia) {
+      // Descobre o dia da semana do dia atual (0=domingo, 1=segunda, ..., 6=sábado)
+      let firstDate = new Date(ano, mes, currentDay)
+      let firstWeekDay = firstDate.getDay()
+      // Calcula o índice da segunda-feira (1=segunda, 0=domingo)
+      let startIndex = firstWeekDay === 0 ? 6 : firstWeekDay - 1
 
-      // Primeira semana: começa no dia 1, no dia da semana correspondente, vai até sexta ou fim do mês
-      // Demais semanas: sempre de segunda a sexta, ou até fim do mês
-      let dataObj = new Date(ano, mes, dia)
-      let diaSemana = dataObj.getDay() // 0=domingo, 1=segunda, ..., 6=sábado
+      // Preenche a semana com null até o dia certo
+      let diasDaSemana = Array(startIndex).fill(null)
 
-      // Descobre quantos dias úteis (segunda a sexta) restam na semana
-      let diasNaSemana = 0
-      if (semana === 1) {
-        // Primeira semana: começa no dia 1, vai até sexta ou fim do mês
-        diasNaSemana = Math.min(5 - ((diaSemana === 0 ? 6 : diaSemana - 1)), ultimoDia - dia + 1)
-      } else {
-        // Demais semanas: tenta preencher de segunda a sexta
-        // Ajusta para próxima segunda-feira se não for segunda
-        if (diaSemana !== 1) {
-          dia += (diaSemana === 0 ? 1 : (8 - diaSemana))
-          if (dia > ultimoDia) break
-          dataObj = new Date(ano, mes, dia)
-          diaSemana = dataObj.getDay()
+      // Preenche os dias reais da semana
+      for (let i = startIndex; i < 7; i++) {
+        if (currentDay > ultimoDia) {
+          diasDaSemana.push(null)
+        } else {
+          diasDaSemana.push(currentDay)
+          currentDay++
         }
-        diasNaSemana = Math.min(5, ultimoDia - dia + 1)
       }
 
-      for (let i = 0; i < diasNaSemana; i++) {
-        const dataCorrente = new Date(ano, mes, dia)
-        const nomeDia = diasSemanaNomes[dataCorrente.getDay() === 0 ? 6 : dataCorrente.getDay() - 1]
-        const dataFormatada = `${dia.toString().padStart(2, "0")} ${mesesNomes[mes]}`
+      tabelaLinhas.push({ tipo: 'semana', texto: `${semana}ª Semana` })
+
+      for (let i = 0; i < 7; i++) {
+        const diaCorrente = diasDaSemana[i]
+        if (diaCorrente === null) continue
+
+        const dataCorrente = new Date(ano, mes, diaCorrente)
+        const diaSemanaCorrente = dataCorrente.getDay()
+        const nomeDia = diasSemanaNomes[diaSemanaCorrente === 0 ? 6 : diaSemanaCorrente - 1]
+        const dataFormatada = `${diaCorrente.toString().padStart(2, "0")} ${mesesNomes[mes]}`
         const escala = escalaItems[dataIndex] || {}
-        tabelaLinhas.push({
-          tipo: 'linha',
-          data: dataFormatada,
-          dia: nomeDia,
-          militar: escala.militar?.nome || '',
-          sobreaviso: escala.sobreaviso?.nome || ''
-        })
-        dataIndex++
-        dia++
+
+        if (diaSemanaCorrente === 6) {
+          // Sábado em vermelho
+          tabelaLinhas.push({
+            tipo: 'fimSemana',
+            data: dataFormatada,
+            dia: 'Sábado',
+            cor: 'vermelho'
+          })
+          dataIndex++
+        } else if (diaSemanaCorrente === 0) {
+          // Domingo em vermelho
+          tabelaLinhas.push({
+            tipo: 'fimSemana',
+            data: dataFormatada,
+            dia: 'Domingo',
+            cor: 'vermelho'
+          })
+          dataIndex++
+        } else {
+          tabelaLinhas.push({
+            tipo: 'linha',
+            data: dataFormatada,
+            dia: nomeDia,
+            militar: escala.militar?.nome || '',
+            sobreaviso: escala.sobreaviso?.nome || ''
+          })
+          dataIndex++
+        }
       }
 
       semana++
@@ -352,13 +374,13 @@ export async function POST(request: NextRequest) {
         currentY -= 16 // Reduzido de 20 para 16
       }
       else if (linha.tipo === 'fimSemana') {
-        // Linha de fim de semana: fundo #d97a00 (laranja), texto bold (altura reduzida)
+        // Linha de fim de semana: fundo vermelho, texto bold (altura reduzida)
         page.drawRectangle({
           x: colunas.data.x,
           y: currentY - 3,
           width: larguraTotal,
           height: 16, // Reduzido de 20 para 16
-          color: rgb(0.85, 0.48, 0), // #d97a00
+          color: rgb(1, 0, 0), // vermelho puro
           borderColor: rgb(0, 0, 0),
           borderWidth: 1,
         })
