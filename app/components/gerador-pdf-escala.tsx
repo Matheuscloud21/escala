@@ -10,9 +10,11 @@ import type { EscalaItem, Militar } from "../page"
 interface Props {
   escala: EscalaItem[]
   militares: Militar[]
+  mes: number
+  ano: number
 }
 
-export default function GeradorPDFEscala({ escala, militares }: Props) {
+export default function GeradorPDFEscala({ escala, militares, mes, ano }: Props) {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
   const [isPreviewMode, setIsPreviewMode] = useState(true)
 
@@ -23,13 +25,11 @@ export default function GeradorPDFEscala({ escala, militares }: Props) {
     const totalVagos = escala.filter(item => !item.militar).length
     const percentualPreenchimento = escala.length > 0 ? Math.round((totalEscalados / escala.length) * 100) : 0
     
-    // Determina o período da escala
-    const agora = new Date()
-    const mesAtual = agora.getMonth()
-    const anoAtual = agora.getFullYear()
-    const periodo = `01 a 31 de ${["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"][mesAtual]} de ${anoAtual}`
+    // Determina o período da escala com base no mês/ano selecionado
+    const periodo = `01 a ${new Date(ano, mes + 1, 0).getDate()} de ${["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"][mes]} de ${ano}`
 
     // Data e hora atuais para geração
+    const agora = new Date()
     const dataGeracao = agora.toLocaleDateString("pt-BR")
     const horaGeracao = agora.toLocaleTimeString("pt-BR", { hour: '2-digit', minute: '2-digit' })
 
@@ -42,7 +42,8 @@ export default function GeradorPDFEscala({ escala, militares }: Props) {
       totalVagos,
       totalMilitares: militares.length,
       percentualPreenchimento,
-      
+      mes,
+      ano,
       // Lista da escala
       escala: escala.map((item) => ({
         data: item.data,

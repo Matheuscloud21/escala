@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
     htmlTemplate = htmlTemplate.replace('__PERIODO__', dadosEscala.periodo || 'não definido')
 
     // Organizar dados por semana
-    const escalaItems = dadosEscala.escala || []
+    // const escalaItems = dadosEscala.escala || [] // Removido, já está declarado abaixo
 
     // Agora vamos usar puppeteer se estiver disponível, caso contrário manter o PDF atual
     // Por enquanto, vou manter a geração PDF atual mas ajustar para usar a nova estrutura
@@ -148,66 +148,86 @@ export async function POST(request: NextRequest) {
     // Criar tabela com base no novo template HTML
     let currentY = height - 235 // Ajustado para dar espaço ao cabeçalho centralizado
 
-    // Nova estrutura de tabela conforme especificações - semanas juntadas com domingo
-    const tabelaLinhas = [
-      // 1ª Semana
-      { tipo: 'semana', texto: '1ª Semana' },
-      { tipo: 'linha', data: '01 JUL', dia: 'Terça-feira', militar: '{{dado}}', sobreaviso: 'Cb OLIVEIRA' },
-      { tipo: 'linha', data: '02 JUL', dia: 'Quarta-feira', militar: 'Cb OLIVEIRA', sobreaviso: 'Cb NETO' },
-      { tipo: 'linha', data: '03 JUL', dia: 'Quinta-feira', militar: 'Cb UALACE', sobreaviso: 'Sd GOMES' },
-      { tipo: 'linha', data: '04 JUL', dia: 'Sexta-feira', militar: 'Sd GOMES', sobreaviso: 'Cb NETO' },
-      { tipo: 'fimSemana', data: '05 JUL', dia: 'Sábado' },
-      { tipo: 'fimSemana', data: '06 JUL', dia: 'Domingo' },
-      // 2ª Semana
-      { tipo: 'semana', texto: '2ª Semana' },
-      { tipo: 'linha', data: '07 JUL', dia: 'Segunda-feira', militar: 'Cb NETO', sobreaviso: 'Cb OLIVEIRA' },
-      { tipo: 'linha', data: '08 JUL', dia: 'Terça-feira', militar: 'Cb OLIVEIRA', sobreaviso: 'Cb UALACE' },
-      { tipo: 'linha', data: '09 JUL', dia: 'Quarta-feira', militar: 'Cb UALACE', sobreaviso: 'Cb RENNAN' },
-      { tipo: 'linha', data: '10 JUL', dia: 'Quinta-feira', militar: 'Cb RENNAN', sobreaviso: 'Sd GOMES' },
-      { tipo: 'linha', data: '11 JUL', dia: 'Sexta-feira', militar: 'Sd GOMES', sobreaviso: 'Cb NETO' },
-      { tipo: 'fimSemana', data: '12 JUL', dia: 'Sábado' },
-      { tipo: 'fimSemana', data: '13 JUL', dia: 'Domingo' },
-      // 3ª Semana
-      { tipo: 'semana', texto: '3ª Semana' },
-      { tipo: 'linha', data: '14 JUL', dia: 'Segunda-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '15 JUL', dia: 'Terça-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '16 JUL', dia: 'Quarta-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '17 JUL', dia: 'Quinta-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '18 JUL', dia: 'Sexta-feira', militar: '', sobreaviso: '' },
-      { tipo: 'fimSemana', data: '19 JUL', dia: 'Sábado' },
-      { tipo: 'fimSemana', data: '20 JUL', dia: 'Domingo' },
-      // 4ª Semana
-      { tipo: 'semana', texto: '4ª Semana' },
-      { tipo: 'linha', data: '21 JUL', dia: 'Segunda-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '22 JUL', dia: 'Terça-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '23 JUL', dia: 'Quarta-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '24 JUL', dia: 'Quinta-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '25 JUL', dia: 'Sexta-feira', militar: '', sobreaviso: '' },
-      { tipo: 'fimSemana', data: '26 JUL', dia: 'Sábado' },
-      { tipo: 'fimSemana', data: '27 JUL', dia: 'Domingo' },
-      // 5ª Semana
-      { tipo: 'semana', texto: '5ª Semana' },
-      { tipo: 'linha', data: '28 JUL', dia: 'Segunda-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '29 JUL', dia: 'Terça-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '30 JUL', dia: 'Quarta-feira', militar: '', sobreaviso: '' },
-      { tipo: 'linha', data: '31 JUL', dia: 'Quinta-feira', militar: '', sobreaviso: '' },
+    // Geração dinâmica da tabela conforme mês/ano recebido
+    const mesesNomes = [
+      "JAN", "FEV", "MAR", "ABR", "MAI", "JUN",
+      "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"
     ]
+    const diasSemanaNomes = [
+      "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"
+    ]
+    const mes = typeof dadosEscala.mes === "number" ? dadosEscala.mes : new Date().getMonth()
+    const ano = typeof dadosEscala.ano === "number" ? dadosEscala.ano : new Date().getFullYear()
+    const ultimoDia = new Date(ano, mes + 1, 0).getDate()
+    const escalaItems = dadosEscala.escala || []
 
-    // Substituir dados vazios com dados reais da escala
+    let tabelaLinhas = []
+    let semana = 1
     let dataIndex = 0
-    tabelaLinhas.forEach((linha, index) => {
-      if ((linha.tipo === 'linha' || linha.tipo === 'fimSemana') && dataIndex < escalaItems.length) {
-        const dadoReal = escalaItems[dataIndex]
-        if (dadoReal) {
-          tabelaLinhas[index] = {
-            ...linha,
-            militar: dadoReal.militar?.nome || '',
-            sobreaviso: dadoReal.sobreaviso?.nome || ''
-          }
-          dataIndex++
-        }
+
+    for (let dia = 1; dia <= ultimoDia; ) {
+      // Descobre o dia da semana do primeiro dia da semana (segunda-feira)
+      const dataObj = new Date(ano, mes, dia)
+      let diaSemana = dataObj.getDay() // 0 = domingo, 1 = segunda, ..., 6 = sábado
+
+      // Ajusta para começar na segunda-feira
+      let inicioSemana = dia
+      if (diaSemana !== 1) {
+        // Se não for segunda, pula para a próxima segunda
+        inicioSemana += (diaSemana === 0 ? 1 : (8 - diaSemana))
+        if (inicioSemana > ultimoDia) break
       }
-    })
+
+      // Adiciona linha de semana
+      tabelaLinhas.push({ tipo: 'semana', texto: `${semana}ª Semana` })
+
+      // Para cada dia da semana (segunda a sexta)
+      for (let i = 0; i < 5; i++) {
+        const diaCorrente = inicioSemana + i
+        if (diaCorrente > ultimoDia) break
+        const dataCorrente = new Date(ano, mes, diaCorrente)
+        const nomeDia = diasSemanaNomes[dataCorrente.getDay() === 0 ? 6 : dataCorrente.getDay() - 1]
+        const dataFormatada = `${diaCorrente.toString().padStart(2, "0")} ${mesesNomes[mes]}`
+        const escala = escalaItems[dataIndex] || {}
+        tabelaLinhas.push({
+          tipo: 'linha',
+          data: dataFormatada,
+          dia: nomeDia,
+          militar: escala.militar?.nome || '',
+          sobreaviso: escala.sobreaviso?.nome || ''
+        })
+        dataIndex++
+      }
+
+      // Sábado
+      const sabado = inicioSemana + 5
+      if (sabado <= ultimoDia) {
+        const dataSab = new Date(ano, mes, sabado)
+        tabelaLinhas.push({
+          tipo: 'fimSemana',
+          data: `${sabado.toString().padStart(2, "0")} ${mesesNomes[mes]}`,
+          dia: 'Sábado'
+        })
+        dataIndex++
+      }
+
+      // Domingo
+      const domingo = inicioSemana + 6
+      if (domingo <= ultimoDia) {
+        const dataDom = new Date(ano, mes, domingo)
+        tabelaLinhas.push({
+          tipo: 'fimSemana',
+          data: `${domingo.toString().padStart(2, "0")} ${mesesNomes[mes]}`,
+          dia: 'Domingo'
+        })
+        dataIndex++
+      }
+
+      semana++
+      dia = inicioSemana + 7
+    }
+
+    // (Removido: substituição de dados vazios, pois já é feito na geração dinâmica)
 
     // Definir larguras proporcionais: 15% (Data), 25% (Dia), 30% + 30% (Serviço/Sobreaviso)
     const larguraTotal = 495

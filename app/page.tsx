@@ -559,7 +559,7 @@ export default function SistemaEscalaMilitar() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
             >
-              <GeradorPDFEscala escala={escala} militares={militares} />
+              <GeradorPDFEscala escala={escala} militares={militares} mes={mesAtual} ano={anoAtual} />
             </motion.div>
           )}
         </AnimatePresence>
