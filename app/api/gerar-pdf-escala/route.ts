@@ -36,15 +36,15 @@ export async function POST(request: NextRequest) {
 
     // Telefone do Subdiretor (canto superior direito)
     page.drawText('Telefone do Subdiretor:', {
-      x: 420,
-      y: height - 30,
+      x: 450,
+      y: height - 130,
       size: 10,
       font,
       color: rgb(0, 0, 0),
     })
     page.drawText('61 996881722', {
-      x: 440,
-      y: height - 45,
+      x: 470,
+      y: height - 142,
       size: 10,
       font: boldFont,
       color: rgb(0, 0, 0),
