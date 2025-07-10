@@ -84,29 +84,64 @@ export default function SistemaEscalaMilitar() {
     const ultimoDia = new Date(ano, mes + 1, 0)
     const semanas = []
 
-    const dataAtual = new Date(primeiroDia)
-    // Ajustar para começar na segunda-feira
-    const diaSemana = dataAtual.getDay()
-    const diasParaSegunda = diaSemana === 0 ? -6 : 1 - diaSemana
-    dataAtual.setDate(dataAtual.getDate() + diasParaSegunda)
+    // Função para verificar se é dia útil (segunda a sexta)
+    const isDiaUtil = (date: Date) => {
+      const dia = date.getDay()
+      return dia >= 1 && dia <= 5 // 1 = segunda, 5 = sexta
+    }
 
-    while (dataAtual <= ultimoDia || dataAtual.getMonth() === mes) {
+    // Primeira semana: só dias úteis a partir do início do mês
+    let dataAtual = new Date(primeiroDia)
+    const primeiraSemana = []
+    while (dataAtual <= ultimoDia && isDiaUtil(dataAtual)) {
+      primeiraSemana.push({
+        dia: diasSemana[dataAtual.getDay() === 0 ? 6 : dataAtual.getDay() - 1],
+        data: new Date(dataAtual).toISOString().split("T")[0],
+        militar: null,
+        sobreaviso: null,
+      })
+      dataAtual.setDate(dataAtual.getDate() + 1)
+      // Se sábado ou domingo, pula para segunda
+      if (dataAtual.getDay() === 6) dataAtual.setDate(dataAtual.getDate() + 2)
+      if (dataAtual.getDay() === 0) dataAtual.setDate(dataAtual.getDate() + 1)
+      // Se mudou de mês, para
+      if (dataAtual.getMonth() !== mes) break
+    }
+    if (primeiraSemana.length > 0) semanas.push(primeiraSemana)
+
+    // Demais semanas: sempre de segunda a sexta
+    while (dataAtual <= ultimoDia) {
+      // Ajusta para segunda-feira
+      while (dataAtual.getDay() !== 1 && dataAtual <= ultimoDia) {
+        dataAtual.setDate(dataAtual.getDate() + 1)
+        if (dataAtual.getMonth() !== mes) break
+      }
+      if (dataAtual > ultimoDia || dataAtual.getMonth() !== mes) break
+
       const semana = []
-      for (let i = 0; i < 7; i++) {
-        if (dataAtual.getMonth() === mes) {
-          semana.push({
-            dia: diasSemana[i],
-            data: new Date(dataAtual).toISOString().split("T")[0],
-            militar: null,
-            sobreaviso: null,
-          })
-        }
+      for (let i = 0; i < 5; i++) { // segunda a sexta
+        if (dataAtual > ultimoDia || dataAtual.getMonth() !== mes) break
+        semana.push({
+          dia: diasSemana[dataAtual.getDay() - 1],
+          data: new Date(dataAtual).toISOString().split("T")[0],
+          militar: null,
+          sobreaviso: null,
+        })
         dataAtual.setDate(dataAtual.getDate() + 1)
       }
-      if (semana.length > 0) {
-        semanas.push(semana)
+      if (semana.length > 0) semanas.push(semana)
+    }
+
+    // Ajusta a última semana para terminar no último dia útil do mês
+    if (semanas.length > 0) {
+      const ultimaSemana = semanas[semanas.length - 1]
+      // Remove dias após o último dia útil
+      while (ultimaSemana.length > 0) {
+        const data = new Date(ultimaSemana[ultimaSemana.length - 1].data)
+        if (isDiaUtil(data) && data <= ultimoDia) break
+        ultimaSemana.pop()
       }
-      if (dataAtual.getMonth() > mes) break
+      if (ultimaSemana.length === 0) semanas.pop()
     }
 
     return semanas
