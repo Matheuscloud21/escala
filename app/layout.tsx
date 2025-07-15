@@ -6,9 +6,9 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Sistema de Escala Militar",
+  title: "Escala DOC",
   description: "Sistema de controle de permanência e folgas militares",
-    generator: 'v0.dev'
+    generator: 'Cb Oliveira'
 }
 
 export default function RootLayout({
