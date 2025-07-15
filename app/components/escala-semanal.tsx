@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import type { EscalaItem, Militar } from "../page"
+import type { EscalaItem, Militar, Impedimento } from "../page" // Importar Impedimento
 
 interface Props {
   escala: EscalaItem[]
   militares: Militar[]
+  impedimentos: Impedimento[] // Nova prop
   onEscalar: (diaIndex: number, militarId: string) => void
   onEscalarSobreaviso: (diaIndex: number, militarId: string) => void
   onRemover: (diaIndex: number) => void
@@ -20,7 +21,7 @@ interface Props {
   anoAtual: number
 }
 
-export default function EscalaSemanal({ escala, militares, onEscalar, onEscalarSobreaviso, onRemover, onRemoverSobreaviso, mesAtual, anoAtual }: Props) {
+export default function EscalaSemanal({ escala, militares, impedimentos, onEscalar, onEscalarSobreaviso, onRemover, onRemoverSobreaviso, mesAtual, anoAtual }: Props) {
   const [dialogAberto, setDialogAberto] = useState<number | null>(null)
   const [dialogSobreavisoAberto, setDialogSobreavisoAberto] = useState<number | null>(null)
 
@@ -34,6 +35,18 @@ export default function EscalaSemanal({ escala, militares, onEscalar, onEscalarS
   const getMilitaresOrdenados = () => {
     return militares.sort((a, b) => b.diasFolga - a.diasFolga)
   }
+
+  const isMilitarImpedido = (militarId: string, dataEscala: string) => {
+    const dataEscalaObj = new Date(dataEscala + "T00:00:00");
+    return impedimentos.some(imp => {
+      if (imp.militarId === militarId) {
+        const dataInicioImp = new Date(imp.dataInicio + "T00:00:00");
+        const dataFimImp = new Date(imp.dataFim + "T00:00:00");
+        return dataEscalaObj >= dataInicioImp && dataEscalaObj <= dataFimImp;
+      }
+      return false;
+    });
+  };
 
   const handleEscalarMilitar = (diaIndex: number, militarId: string) => {
     onEscalar(diaIndex, militarId)
@@ -152,29 +165,41 @@ export default function EscalaSemanal({ escala, militares, onEscalar, onEscalarS
                           </DialogTitle>
                         </DialogHeader>
                         <div className="space-y-3 max-h-96 overflow-y-auto">
-                          {getMilitaresOrdenados().map((militar) => (
-                            <div
-                              key={militar.id}
-                              className="p-3 rounded-xl border cursor-pointer transition-all bg-gray-700/40 border-gray-600/30 hover:border-green-700/50"
-                              onClick={() => handleEscalarMilitar(index, militar.id)}
-                            >
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
-                                  <span className="text-white font-bold text-sm">
-                                    {militar.nome
-                                      .split(" ")
-                                      .map((n) => n[0])
-                                      .join("")
-                                      .slice(0, 2)}
-                                  </span>
-                                </div>
-                                <div className="flex-1">
-                                  <p className="text-white font-medium">{militar.nome}</p>
-                                  <p className="text-gray-400 text-sm">{militar.patente}</p>
+                          {getMilitaresOrdenados().map((militar) => {
+                            const impedido = isMilitarImpedido(militar.id, item.data);
+                            return (
+                              <div
+                                key={militar.id}
+                                className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                                  impedido
+                                    ? "bg-red-900/30 border-red-700/30 text-gray-500 cursor-not-allowed"
+                                    : "bg-gray-700/40 border-gray-600/30 hover:border-green-700/50"
+                                }`}
+                                onClick={() => !impedido && handleEscalarMilitar(index, militar.id)}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${
+                                    impedido ? "bg-gray-600" : "bg-gradient-to-br from-green-500 to-green-600"
+                                  }`}>
+                                    <span className="text-white font-bold text-sm">
+                                      {militar.nome
+                                        .split(" ")
+                                        .map((n) => n[0])
+                                        .join("")
+                                        .slice(0, 2)}
+                                    </span>
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className={`font-medium ${impedido ? "text-gray-500" : "text-white"}`}>{militar.nome}</p>
+                                    <p className={`text-xs ${impedido ? "text-gray-600" : "text-gray-400"}`}>{militar.patente}</p>
+                                  </div>
+                                  {impedido && (
+                                    <Badge className="bg-red-700/50 text-red-200 border-red-600/50">Impedido</Badge>
+                                  )}
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </DialogContent>
                     </Dialog>
@@ -232,29 +257,41 @@ export default function EscalaSemanal({ escala, militares, onEscalar, onEscalarS
                           </DialogTitle>
                         </DialogHeader>
                         <div className="space-y-3 max-h-96 overflow-y-auto">
-                          {getMilitaresOrdenados().map((militar) => (
-                            <div
-                              key={militar.id}
-                              className="p-3 rounded-xl border cursor-pointer transition-all bg-gray-700/40 border-gray-600/30 hover:border-blue-700/50"
-                              onClick={() => handleEscalarSobreaviso(index, militar.id)}
-                            >
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                                  <span className="text-white font-bold text-sm">
-                                    {militar.nome
-                                      .split(" ")
-                                      .map((n) => n[0])
-                                      .join("")
-                                      .slice(0, 2)}
-                                  </span>
-                                </div>
-                                <div className="flex-1">
-                                  <p className="text-white font-medium">{militar.nome}</p>
-                                  <p className="text-gray-400 text-sm">{militar.patente}</p>
+                          {getMilitaresOrdenados().map((militar) => {
+                            const impedido = isMilitarImpedido(militar.id, item.data);
+                            return (
+                              <div
+                                key={militar.id}
+                                className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                                  impedido
+                                    ? "bg-red-900/30 border-red-700/30 text-gray-500 cursor-not-allowed"
+                                    : "bg-gray-700/40 border-gray-600/30 hover:border-blue-700/50"
+                                }`}
+                                onClick={() => !impedido && handleEscalarSobreaviso(index, militar.id)}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${
+                                    impedido ? "bg-gray-600" : "bg-gradient-to-br from-blue-500 to-blue-600"
+                                  }`}>
+                                    <span className="text-white font-bold text-sm">
+                                      {militar.nome
+                                        .split(" ")
+                                        .map((n) => n[0])
+                                        .join("")
+                                        .slice(0, 2)}
+                                    </span>
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className={`font-medium ${impedido ? "text-gray-500" : "text-white"}`}>{militar.nome}</p>
+                                    <p className={`text-xs ${impedido ? "text-gray-600" : "text-gray-400"}`}>{militar.patente}</p>
+                                  </div>
+                                  {impedido && (
+                                    <Badge className="bg-red-700/50 text-red-200 border-red-600/50">Impedido</Badge>
+                                  )}
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </DialogContent>
                     </Dialog>

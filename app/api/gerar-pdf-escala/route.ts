@@ -161,11 +161,13 @@ export async function POST(request: NextRequest) {
     const ano = typeof dadosEscala.ano === "number" ? dadosEscala.ano : new Date().getFullYear()
     const ultimoDia = new Date(ano, mes + 1, 0).getDate()
     const escalaItems = dadosEscala.escala || []
+    console.log('🔍 escalaItems recebidos:', escalaItems);
 
     let tabelaLinhas = []
     let semana = 1
     let dataIndex = 0
     let currentDay = 1
+    console.log('⚙️ Iniciando geração da tabela para Mês:', mes, 'Ano:', ano, 'Último Dia:', ultimoDia);
 
     // Nova lógica: cada semana sempre começa na segunda-feira e tem 7 posições (segunda a domingo)
     while (currentDay <= ultimoDia) {

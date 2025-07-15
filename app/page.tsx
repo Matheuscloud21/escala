@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import AdicionarMilitar from "./components/adicionar-militar"
 import EscalaSemanal from "./components/escala-semanal"
 import GeradorPDFEscala from "./components/gerador-pdf-escala"
+import ImpedimentosMilitares from "./components/impedimentos-militares" // Nova importação
 
 export interface Militar {
   id: string
@@ -25,6 +26,15 @@ export interface EscalaItem {
   data: string
   militar: Militar | null
   sobreaviso: Militar | null
+}
+
+export interface Impedimento {
+  id: string
+  dataInicio: string
+  dataFim: string
+  descricao: string
+  militarId?: string
+  militarNome?: string
 }
 
 const meses = [
@@ -73,7 +83,8 @@ export default function SistemaEscalaMilitar() {
   ])
 
   const [escala, setEscala] = useState<EscalaItem[]>([])
-  const [activeTab, setActiveTab] = useState<"militares" | "escala" | "pdf">("militares")
+  const [impedimentos, setImpedimentos] = useState<Impedimento[]>([]) // Novo estado para impedimentos com tipo correto
+  const [activeTab, setActiveTab] = useState<"militares" | "escala" | "pdf" | "impedimentos">("militares")
   const [mesAtual, setMesAtual] = useState(new Date().getMonth())
   const [anoAtual, setAnoAtual] = useState(new Date().getFullYear())
   const [semanaAtual, setSemanaAtual] = useState(0)
@@ -174,10 +185,23 @@ export default function SistemaEscalaMilitar() {
     })))
   }
 
+  const isMilitarImpedidoNoDia = (militarId: string, dataEscala: string) => {
+    const dataEscalaObj = new Date(dataEscala + "T00:00:00");
+    return impedimentos.some(imp => {
+      if (imp.militarId === militarId) {
+        const dataInicioImp = new Date(imp.dataInicio + "T00:00:00");
+        const dataFimImp = new Date(imp.dataFim + "T00:00:00");
+        return dataEscalaObj >= dataInicioImp && dataEscalaObj <= dataFimImp;
+      }
+      return false;
+    });
+  };
+
   const escalarMilitar = (diaIndex: number, militarId: string) => {
     const militarSelecionado = militares.find((m) => m.id === militarId)
+    const dataDoDia = escala[diaIndex].data;
 
-    if (militarSelecionado) {
+    if (militarSelecionado && !isMilitarImpedidoNoDia(militarId, dataDoDia)) {
       const novaEscala = [...escala]
       novaEscala[diaIndex] = {
         ...novaEscala[diaIndex],
@@ -196,19 +220,24 @@ export default function SistemaEscalaMilitar() {
           ),
         )
       }
+    } else if (militarSelecionado && isMilitarImpedidoNoDia(militarId, dataDoDia)) {
+      alert(`O militar ${militarSelecionado.nome} está impedido de ser escalado no dia ${new Date(dataDoDia + "T00:00:00").toLocaleDateString("pt-BR")}.`);
     }
   }
 
   const escalarSobreaviso = (diaIndex: number, militarId: string) => {
     const militarSelecionado = militares.find((m) => m.id === militarId)
+    const dataDoDia = escala[diaIndex].data;
 
-    if (militarSelecionado) {
+    if (militarSelecionado && !isMilitarImpedidoNoDia(militarId, dataDoDia)) {
       const novaEscala = [...escala]
       novaEscala[diaIndex] = {
         ...novaEscala[diaIndex],
         sobreaviso: militarSelecionado,
       }
       setEscala(novaEscala)
+    } else if (militarSelecionado && isMilitarImpedidoNoDia(militarId, dataDoDia)) {
+      alert(`O militar ${militarSelecionado.nome} está impedido de ser escalado como sobreaviso no dia ${new Date(dataDoDia + "T00:00:00").toLocaleDateString("pt-BR")}.`);
     }
   }
 
@@ -242,6 +271,7 @@ export default function SistemaEscalaMilitar() {
     { id: "militares", label: "Militares", icon: Users },
     { id: "escala", label: "Escala", icon: Calendar },
     { id: "pdf", label: "PDF", icon: FileText },
+    { id: "impedimentos", label: "Impedimentos", icon: Shield }, // Nova aba
   ]
 
   return (
@@ -542,6 +572,7 @@ export default function SistemaEscalaMilitar() {
               <EscalaSemanal
                 escala={escala}
                 militares={militares}
+                impedimentos={impedimentos} // Passando impedimentos
                 onEscalar={escalarMilitar}
                 onEscalarSobreaviso={escalarSobreaviso}
                 onRemover={removerDaEscala}
@@ -560,6 +591,21 @@ export default function SistemaEscalaMilitar() {
               exit={{ opacity: 0, x: 20 }}
             >
               <GeradorPDFEscala escala={escala} militares={militares} mes={mesAtual} ano={anoAtual} />
+            </motion.div>
+          )}
+
+          {activeTab === "impedimentos" && (
+            <motion.div
+              key="impedimentos"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+            >
+              <ImpedimentosMilitares
+                impedimentos={impedimentos}
+                setImpedimentos={setImpedimentos}
+                militares={militares}
+              />
             </motion.div>
           )}
         </AnimatePresence>
