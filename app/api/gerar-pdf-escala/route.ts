@@ -59,9 +59,9 @@ export async function POST(request: NextRequest) {
       // Inserir brasão (80x80 como no HTML)
       page.drawImage(logoImage, {
         x: width / 2 - 40, // Centralizado
-        y: height - 120,
-        width: 80,
-        height: 80,
+        y: height - 100,
+        width: 70,
+        height: 70,
       })
     } catch (error) {
       console.warn('⚠️ Não foi possível carregar o brasão:', error)
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     const texto1 = 'MINISTÉRIO DA DEFESA'
     page.drawText(texto1, {
       x: getCenteredX(texto1, 14, boldFont),
-      y: height - 130,
+      y: height - 110,
       size: 14,
       font: boldFont,
       color: rgb(0, 0, 0),
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     const texto2 = 'EXÉRCITO BRASILEIRO'
     page.drawText(texto2, {
       x: getCenteredX(texto2, 12, boldFont),
-      y: height - 142,
+      y: height - 122,
       size: 12,
       font: boldFont,
       color: rgb(0, 0, 0),
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     const texto3 = 'DEPARTAMENTO DE ENGENHARIA E CONSTRUÇÃO'
     page.drawText(texto3, {
       x: getCenteredX(texto3, 10, font),
-      y: height - 154,
+      y: height - 134,
       size: 10,
       font,
       color: rgb(0, 0, 0),
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     const texto4 = 'DIRETORIA DE OBRAS DE COOPERAÇÃO'
     page.drawText(texto4, {
       x: getCenteredX(texto4, 10, font),
-      y: height - 166,
+      y: height - 146,
       size: 10,
       font,
       color: rgb(0, 0, 0),
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     const texto5 = '(Serviço de Obras e Fortificações do Exército/1946)'
     page.drawText(texto5, {
       x: getCenteredX(texto5, 8, font),
-      y: height - 178,
+      y: height - 156,
       size: 8,
       font,
       color: rgb(0, 0, 0),
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
     const texto6 = '"PREVISÃO"'
     page.drawText(texto6, {
       x: getCenteredX(texto6, 12, boldFont),
-      y: height - 190,
+      y: height - 169,
       size: 12,
       font: boldFont,
       color: rgb(0, 0, 0),
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
     const texto7 = `Período ${dadosEscala.periodo || 'não definido'}.`
     page.drawText(texto7, {
       x: getCenteredX(texto7, 10, font),
-      y: height - 202,
+      y: height - 179,
       size: 10,
       font,
       color: rgb(0, 0, 0),
@@ -146,7 +146,8 @@ export async function POST(request: NextRequest) {
     // Por enquanto, vou manter a geração PDF atual mas ajustar para usar a nova estrutura
 
     // Criar tabela com base no novo template HTML
-    let currentY = height - 235 // Ajustado para dar espaço ao cabeçalho centralizado
+    let currentY = height - 195 // Ajustado para dar espaço ao cabeçalho centralizado
+    
 
     // Geração dinâmica da tabela conforme mês/ano recebido, começando do dia 1 e terminando no último dia
     const mesesNomes = [
@@ -255,7 +256,7 @@ export async function POST(request: NextRequest) {
           x: colunas.data.x,
           y: currentY - 3,
           width: larguraTotal,
-          height: 18, // Reduzido de 20 para 18
+          height: 16, // Reduzido de 20 para 18
           color: rgb(1, 1, 0), // #ffff00
           borderColor: rgb(0, 0, 0),
           borderWidth: 1,

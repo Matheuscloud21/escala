@@ -136,10 +136,11 @@ export default function GeradorPDFEscala({ escala, militares, mes, ano }: Props)
                 onClick={() => setIsPreviewMode(!isPreviewMode)}
                 variant={isPreviewMode ? "default" : "outline"}
                 size="sm"
-                className="text-xs"
+                className={`text-xs ${!isPreviewMode ? "text-black" : "text-white"}`}
               >
                 <Eye className="h-4 w-4 mr-1" />
                 {isPreviewMode ? "Preview ON" : "Preview OFF"}
+                
               </Button>
             </div>
           </CardTitle>
@@ -162,7 +163,7 @@ export default function GeradorPDFEscala({ escala, militares, mes, ano }: Props)
             </div>
           )}
 
-          <div className="bg-gray-700/40 backdrop-blur-sm p-6 rounded-xl border border-green-800/20">
+          {/* <div className="bg-gray-700/40 backdrop-blur-sm p-6 rounded-xl border border-green-800/20">
             <div className="flex items-start gap-4">
               <CheckCircle className="h-6 w-6 text-green-400 mt-1 flex-shrink-0" />
               <div>
@@ -181,9 +182,9 @@ export default function GeradorPDFEscala({ escala, militares, mes, ano }: Props)
                 </ul>
               </div>
             </div>
-          </div>
+          </div> */}
 
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          {/* <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="bg-gray-700/30 p-3 rounded-lg">
               <div className="text-gray-300">Total Escalados:</div>
               <div className="text-green-400 font-bold">{escala.filter(item => item.militar).length}</div>
@@ -192,7 +193,7 @@ export default function GeradorPDFEscala({ escala, militares, mes, ano }: Props)
               <div className="text-gray-300">Total Vagos:</div>
               <div className="text-red-400 font-bold">{escala.filter(item => !item.militar).length}</div>
             </div>
-          </div>
+          </div> */}
 
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
