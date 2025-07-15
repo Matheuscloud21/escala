@@ -162,6 +162,32 @@ export async function POST(request: NextRequest) {
     const ultimoDia = new Date(ano, mes + 1, 0).getDate()
     const escalaItems = dadosEscala.escala || []
     console.log('🔍 escalaItems recebidos:', escalaItems);
+    
+    // Função para abreviar patente
+    function abreviarPatente(patente: string | undefined): string {
+      if (!patente) return ''
+      const map: Record<string, string> = {
+        'Soldado': 'SD',
+        'Cabo': 'CB',
+        '3º Sargento': '3º Sgt',
+        '2º Sargento': '2º Sgt',
+        '1º Sargento': '1º Sgt',
+        'Subtenente': 'ST',
+        'Tenente': 'Ten',
+        'Capitão': 'Cap',
+        'Major': 'Maj',
+        'Tenente-Coronel': 'Ten Cel',
+        'Coronel': 'Cel'
+      }
+      return map[patente] || patente
+    }
+    
+    // Função para montar nome completo com patente abreviada
+    function nomeComPatente(militar: any): string {
+      if (!militar) return ''
+      const abrev = abreviarPatente(militar.patente)
+      return abrev ? `${abrev} ${militar.nome}` : militar.nome || ''
+    }
 
     let tabelaLinhas = []
     let semana = 1
@@ -201,6 +227,7 @@ export async function POST(request: NextRequest) {
         const nomeDia = diasSemanaNomes[diaSemanaCorrente === 0 ? 6 : diaSemanaCorrente - 1]
         const dataFormatada = `${diaCorrente.toString().padStart(2, "0")} ${mesesNomes[mes]}`
         const escala = escalaItems[dataIndex] || {}
+        console.log(`Dados para o dia ${diaCorrente}:`, escala);
 
         if (diaSemanaCorrente === 6) {
           // Sábado em vermelho
@@ -225,8 +252,8 @@ export async function POST(request: NextRequest) {
             tipo: 'linha',
             data: dataFormatada,
             dia: nomeDia,
-            militar: escala.militar?.nome || '',
-            sobreaviso: escala.sobreaviso?.nome || ''
+            militar: nomeComPatente(escala.militar),
+            sobreaviso: nomeComPatente(escala.sobreaviso)
           })
           dataIndex++
         }
@@ -242,8 +269,8 @@ export async function POST(request: NextRequest) {
     const colunas = {
       data: { x: 50, largura: larguraTotal * 0.15 }, // 15%
       dia: { x: 50 + larguraTotal * 0.15, largura: larguraTotal * 0.25 }, // 25%
-      militar: { x: 50 + larguraTotal * 0.4, largura: larguraTotal * 0.3 }, // 30%
-      sobreaviso: { x: 50 + larguraTotal * 0.7, largura: larguraTotal * 0.3 } // 30%
+      militar: { x: 50 + larguraTotal * 0.4, largura: larguraTotal * 0.2 }, // 30%
+      sobreaviso: { x: 50 + larguraTotal * 0.7, largura: larguraTotal * 0.2} // 30%
     }
 
     // Renderizar a tabela conforme especificações

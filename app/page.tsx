@@ -16,7 +16,7 @@ export interface Militar {
   id: string
   nome: string
   patente: string
-  matricula: string
+  identidade: string
   diasFolga: number
   ultimoServico: string | null
 }
@@ -60,7 +60,7 @@ export default function SistemaEscalaMilitar() {
       id: "1",
       nome: "João Silva Santos",
       patente: "Soldado",
-      matricula: "123456",
+      identidade: "123456",
       diasFolga: 3,
       ultimoServico: "2024-01-05",
     },
@@ -68,7 +68,7 @@ export default function SistemaEscalaMilitar() {
       id: "2",
       nome: "Carlos Oliveira Lima",
       patente: "Cabo",
-      matricula: "789012",
+      identidade: "789012",
       diasFolga: 5,
       ultimoServico: "2024-01-03",
     },
@@ -76,7 +76,7 @@ export default function SistemaEscalaMilitar() {
       id: "3",
       nome: "Pedro Almeida Costa",
       patente: "3º Sargento",
-      matricula: "345678",
+      identidade: "345678",
       diasFolga: 7,
       ultimoServico: null,
     },
@@ -530,7 +530,7 @@ export default function SistemaEscalaMilitar() {
                             <div>
                               <h3 className="text-white font-semibold text-lg">{militar.nome}</h3>
                               <p className="text-gray-400">
-                                {militar.patente} - Mat: {militar.matricula}
+                                {militar.patente} - Mat: {militar.identidade}
                               </p>
                             </div>
                           </div>

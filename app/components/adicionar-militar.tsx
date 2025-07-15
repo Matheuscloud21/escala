@@ -37,18 +37,18 @@ export default function AdicionarMilitar({ onAdicionar }: Props) {
   const [formData, setFormData] = useState({
     nome: "",
     patente: "",
-    matricula: "",
+    identidade: "",
     diasFolga: 0,
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (formData.nome && formData.patente && formData.matricula) {
+    if (formData.nome && formData.patente && formData.identidade) {
       onAdicionar({
         ...formData,
         ultimoServico: null,
       })
-      setFormData({ nome: "", patente: "", matricula: "", diasFolga: 0 })
+      setFormData({ nome: "", patente: "", identidade: "", diasFolga: 0 })
       setIsOpen(false)
     }
   }
@@ -84,7 +84,7 @@ export default function AdicionarMilitar({ onAdicionar }: Props) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <Label htmlFor="nome" className="text-gray-300 font-medium">
-                    Nome Completo
+                    Nome de Guerra
                   </Label>
                   <Input
                     id="nome"
@@ -97,15 +97,15 @@ export default function AdicionarMilitar({ onAdicionar }: Props) {
                 </div>
 
                 <div>
-                  <Label htmlFor="matricula" className="text-gray-300 font-medium">
-                    Matrícula
+                  <Label htmlFor="identidade" className="text-gray-300 font-medium">
+                    Identidade Militar
                   </Label>
                   <Input
-                    id="matricula"
-                    value={formData.matricula}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, matricula: e.target.value }))}
+                    id="identidade"
+                    value={formData.identidade}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, identidade: e.target.value }))}
                     className="bg-gray-700/50 border-green-800/30 text-white placeholder:text-gray-500 focus:border-green-500/50 focus:ring-green-500/20"
-                    placeholder="Digite a matrícula"
+                    placeholder="Digite a Identidade"
                     required
                   />
                 </div>
